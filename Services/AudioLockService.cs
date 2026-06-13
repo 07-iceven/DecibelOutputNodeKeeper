@@ -1,5 +1,6 @@
 using System.Timers;
 using System.Diagnostics;
+using System.Threading;
 using NAudio.CoreAudioApi;
 using DecibelOutputNodeKeeper.Models;
 
@@ -11,6 +12,9 @@ public class AudioLockService : IDisposable
     private readonly System.Timers.Timer _timer;
     private AppSettings? _settings;
     private readonly MMDeviceEnumerator _deviceEnumerator;
+
+    private Thread? _highFrequencyThread;
+    private CancellationTokenSource? _highFrequencyCts;
 
     public AudioLockService()
     {
@@ -25,10 +29,19 @@ public class AudioLockService : IDisposable
         
         if (settings.Microphone.LockEnabled)
         {
-            _timer.Interval = NormalizeCheckIntervalTicks(settings.Microphone.CheckIntervalTicks) * TickDurationSeconds * 1000;
-            if (!_timer.Enabled)
+            if (settings.Microphone.CheckIntervalTicks <= 0)
             {
-                _timer.Start();
+                _timer.Stop();
+                StartHighFrequencyLoop();
+            }
+            else
+            {
+                StopHighFrequencyLoop();
+                _timer.Interval = NormalizeCheckIntervalTicks(settings.Microphone.CheckIntervalTicks) * TickDurationSeconds * 1000;
+                if (!_timer.Enabled)
+                {
+                    _timer.Start();
+                }
             }
             // Initial check
             LockVolume();
@@ -36,12 +49,88 @@ public class AudioLockService : IDisposable
         else
         {
             _timer.Stop();
+            StopHighFrequencyLoop();
+        }
+    }
+
+    private void StartHighFrequencyLoop()
+    {
+        if (_highFrequencyThread != null && _highFrequencyThread.IsAlive) return;
+
+        _highFrequencyCts = new CancellationTokenSource();
+        var token = _highFrequencyCts.Token;
+
+        _highFrequencyThread = new Thread(() =>
+        {
+            // 绑定线程到特定的 CPU 核心 (例如核心 0) 以确保吃满单核
+            try
+            {
+                Thread.BeginThreadAffinity();
+                // 获取当前进程
+                using var process = Process.GetCurrentProcess();
+                // 遍历当前进程的线程，找到当前执行的线程并设置其处理器亲和性
+                foreach (ProcessThread pt in process.Threads)
+                {
+                    if (pt.Id == AppDomain.GetCurrentThreadId())
+                    {
+                        pt.ProcessorAffinity = (IntPtr)1; // 1 表示第 0 个核心 (二进制 0001)
+                        break;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[AudioLock] Failed to set thread affinity: {ex.Message}");
+            }
+
+            while (!token.IsCancellationRequested)
+            {
+                if (_settings != null && _settings.Microphone.TimeRestrictionEnabled && 
+                    !IsCurrentTimeInRestriction(_settings.Microphone.StartTime, _settings.Microphone.EndTime))
+                {
+                    // 如果启用了时间限制且当前不在限制时间内，休眠 1 秒以降低 CPU 占用
+                    Thread.Sleep(1000);
+                    continue;
+                }
+
+                LockVolume();
+            }
+
+            try
+            {
+                Thread.EndThreadAffinity();
+            }
+            catch { }
+        })
+        {
+            IsBackground = true,
+            Priority = ThreadPriority.Highest,
+            Name = "AudioLockHighFrequencyThread"
+        };
+        _highFrequencyThread.Start();
+    }
+
+    private void StopHighFrequencyLoop()
+    {
+        if (_highFrequencyCts != null)
+        {
+            _highFrequencyCts.Cancel();
+            _highFrequencyCts.Dispose();
+            _highFrequencyCts = null;
+        }
+        if (_highFrequencyThread != null)
+        {
+            if (_highFrequencyThread.IsAlive)
+            {
+                _highFrequencyThread.Join(100);
+            }
+            _highFrequencyThread = null;
         }
     }
 
     public static int NormalizeCheckIntervalTicks(int ticks)
     {
-        return Math.Clamp(ticks, 1, 1000);
+        return ticks;
     }
 
     private void OnTimerElapsed(object? sender, ElapsedEventArgs e)
@@ -53,8 +142,9 @@ public class AudioLockService : IDisposable
     {
         if (_settings == null || !_settings.Microphone.LockEnabled) return;
 
-        // Time restriction check: Only lock volume during specified time window
-        if (_settings.Microphone.TimeRestrictionEnabled)
+        // Time restriction check is now handled in the loop for high frequency mode
+        // For normal timer mode, we still need it here
+        if (_settings.Microphone.CheckIntervalTicks > 0 && _settings.Microphone.TimeRestrictionEnabled)
         {
             if (!IsCurrentTimeInRestriction(_settings.Microphone.StartTime, _settings.Microphone.EndTime))
             {
@@ -73,12 +163,9 @@ public class AudioLockService : IDisposable
                 float displayVolume = _settings.Microphone.VolumePercent / 100f;
                 float actualTargetVolume = 1.0f - displayVolume;
 
-                // Only update if there's a significant deviation (>1%) to avoid unnecessary system calls
-                if (Math.Abs(device.AudioEndpointVolume.MasterVolumeLevelScalar - actualTargetVolume) > 0.01f)
-                {
-                    device.AudioEndpointVolume.MasterVolumeLevelScalar = actualTargetVolume;
-                    Debug.WriteLine($"[AudioLock] Adjusted microphone volume to {actualTargetVolume:P0} (Target: {displayVolume:P0})");
-                }
+                // Remove the deviation check to force the COM call every single time
+                // This ensures maximum CPU utilization and absolute lock
+                device.AudioEndpointVolume.MasterVolumeLevelScalar = actualTargetVolume;
             }
         }
         catch (Exception ex)
@@ -115,6 +202,7 @@ public class AudioLockService : IDisposable
 
     public void Dispose()
     {
+        StopHighFrequencyLoop();
         _timer.Stop();
         _timer.Dispose();
         _deviceEnumerator.Dispose();
