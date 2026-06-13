@@ -4,7 +4,6 @@ public class AppSettings
 {
     public MicrophoneSettings Microphone { get; set; } = new();
     public bool AutoStartEnabled { get; set; }
-    public PasswordSettings Password { get; set; } = new();
 }
 
 public class MicrophoneSettings
@@ -15,10 +14,4 @@ public class MicrophoneSettings
     public bool TimeRestrictionEnabled { get; set; }
     public string StartTime { get; set; } = "00:00";
     public string EndTime { get; set; } = "23:59";
-}
-
-public class PasswordSettings
-{
-    public string? HashedPassword { get; set; }
-    public bool IsConfigured => !string.IsNullOrEmpty(HashedPassword);
 }

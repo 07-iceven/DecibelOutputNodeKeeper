@@ -1,14 +1,12 @@
 # Decibel Output Node Keeper
 
-`Decibel Output Node Keeper` 是一个基于 `WPF` 与 `.NET 8` 的 Windows 桌面工具，用于持续锁定默认麦克风音量，并通过管理员密码保护设置修改与程序退出操作。
+`Decibel Output Node Keeper` 是一个基于 `WPF` 与 `.NET 8` 的 Windows 桌面工具，用于持续锁定默认麦克风音量。
 
 ## 功能简介
 
 - 锁定默认麦克风音量到指定百分比。
 - 按固定间隔轮询默认录音设备，并自动拉回目标音量。
 - 支持开机自启动，并以托盘模式在后台运行。
-- 首次启动要求设置管理员密码。
-- 修改设置、修改密码、退出程序都受管理员密码保护。
 - 关闭主窗口时不会直接退出，而是最小化到系统托盘。
 
 ## 技术栈
@@ -21,7 +19,6 @@
 ## 适用场景
 
 - 需要把默认麦克风长期维持在固定音量。
-- 希望用户不能随意更改音量锁定策略。
 - 需要程序随 Windows 登录自动运行，并常驻后台。
 
 ## 运行方式
@@ -136,10 +133,6 @@ HKCU\Software\Microsoft\Windows\CurrentVersion\Run
 
 写入的启动参数会附带 `--minimized`，因此登录后会直接隐藏到托盘运行。
 
-### 密码保护
-
-管理员密码使用 `SHA256` 计算哈希后保存，不会以明文形式写入配置文件。
-
 ## 项目结构
 
 ```text
@@ -148,12 +141,8 @@ DecibelOutputNodeKeeper/
 |  \- AppSettings.cs
 |- Services/
 |  |- AudioLockService.cs
-|  |- PasswordService.cs
 |  |- SettingsService.cs
 |  \- StartupService.cs
-|- Windows/
-|  |- PasswordDialog.xaml
-|  \- PasswordDialog.xaml.cs
 |- App.xaml
 |- App.xaml.cs
 |- MainWindow.xaml

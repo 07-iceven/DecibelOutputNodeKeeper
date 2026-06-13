@@ -1,6 +1,5 @@
 using System.Windows;
 using DecibelOutputNodeKeeper.Services;
-using DecibelOutputNodeKeeper.Windows;
 using WpfMessageBox = System.Windows.MessageBox;
 
 namespace DecibelOutputNodeKeeper;
@@ -37,33 +36,6 @@ public partial class App : System.Windows.Application
 
         _audioLockService = new AudioLockService();
         _startupService = new StartupService();
-
-        if (!settings.Password.IsConfigured)
-        {
-            var createPasswordDialog = new PasswordDialog(isCreateMode: true)
-            {
-                Title = "初始化管理员密码"
-            };
-
-            var passwordCreated = createPasswordDialog.ShowDialog();
-            if (passwordCreated != true || string.IsNullOrWhiteSpace(createPasswordDialog.EnteredPassword))
-            {
-                Shutdown();
-                return;
-            }
-
-            PasswordService.SetPassword(settings, createPasswordDialog.EnteredPassword);
-            if (!SettingsService.TrySave(settings, out var saveError))
-            {
-                WpfMessageBox.Show(
-                    $"管理员密码未能保存，程序将退出。{Environment.NewLine}{saveError}",
-                    "保存失败",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
-                Shutdown();
-                return;
-            }
-        }
 
         ApplyManagedSettings(settings);
 

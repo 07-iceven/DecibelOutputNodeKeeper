@@ -40,17 +40,6 @@
                         HorizontalAlignment="Right"
                         Orientation="Horizontal"
                         VerticalAlignment="Center">
-                <Button Width="120"
-                        Margin="0,0,12,0"
-                        Click="UnlockButton_Click"
-                        Content="管理员解锁" />
-                <Button Width="120"
-                        Margin="0,0,12,0"
-                        Click="LockButton_Click"
-                        Content="重新锁定" />
-                <Button Width="120"
-                        Click="ChangePasswordButton_Click"
-                        Content="修改密码" />
             </StackPanel>
         </Grid>
 
@@ -66,11 +55,10 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel>
-                    <TextBlock x:Name="StateTextBlock" FontSize="16" FontWeight="SemiBold" Text="当前为只读模式" />
-                    <TextBlock x:Name="HintTextBlock"
-                               Margin="0,6,0,0"
+                    <TextBlock FontSize="16" FontWeight="SemiBold" Text="设置" />
+                    <TextBlock Margin="0,6,0,0"
                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                               Text="请输入管理员密码后再修改设置。" />
+                               Text="修改设置后点击保存以应用。" />
                 </StackPanel>
 
                 <Button Grid.Column="1"

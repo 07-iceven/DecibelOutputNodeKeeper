@@ -30,7 +30,6 @@
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml" />
     <Page Include="MainWindow.xaml" />
-    <Page Include="Windows\PasswordDialog.xaml" />
   </ItemGroup>
 
 </Project>

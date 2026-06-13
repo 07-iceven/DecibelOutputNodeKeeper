@@ -4,7 +4,6 @@ using System.Windows;
 using Drawing = System.Drawing;
 using DecibelOutputNodeKeeper.Models;
 using DecibelOutputNodeKeeper.Services;
-using DecibelOutputNodeKeeper.Windows;
 using Forms = System.Windows.Forms;
 using WpfMessageBox = System.Windows.MessageBox;
 
@@ -17,7 +16,6 @@ public partial class MainWindow : Window
     private readonly AudioLockService _audioLockService;
     private readonly StartupService _startupService;
     private readonly Forms.NotifyIcon _notifyIcon;
-    private bool _isUnlocked;
     private bool _allowExit;
     private bool _trayTipShown;
 
@@ -37,7 +35,6 @@ public partial class MainWindow : Window
         Closed += MainWindow_Closed;
 
         LoadSettingsToView();
-        ApplyEditMode();
     }
 
     public void HideToTrayOnStartup()
@@ -57,15 +54,6 @@ public partial class MainWindow : Window
         EndTimeTextBox.Text = _settings.Microphone.EndTime;
     }
 
-    private void ApplyEditMode()
-    {
-        SettingsPanel.IsEnabled = _isUnlocked;
-        StateTextBlock.Text = _isUnlocked ? "当前为管理员编辑模式" : "当前为只读模式";
-        HintTextBlock.Text = _isUnlocked
-            ? "可以修改设置并立即应用到当前系统。"
-            : "请输入管理员密码后再修改设置。";
-    }
-
     private Forms.NotifyIcon InitializeTrayIcon()
     {
         var contextMenu = new Forms.ContextMenuStrip();
@@ -74,7 +62,7 @@ public partial class MainWindow : Window
         openItem.Click += (_, _) => Dispatcher.Invoke(ShowMainWindow);
 
         var exitItem = new Forms.ToolStripMenuItem("退出程序");
-        exitItem.Click += (_, _) => Dispatcher.Invoke(RequestExitWithPassword);
+        exitItem.Click += (_, _) => Dispatcher.Invoke(RequestExit);
 
         contextMenu.Items.Add(openItem);
         contextMenu.Items.Add(new Forms.ToolStripSeparator());
@@ -120,108 +108,15 @@ public partial class MainWindow : Window
         Focus();
     }
 
-    private void RequestExitWithPassword()
+    private void RequestExit()
     {
-        var dialog = new PasswordDialog(isCreateMode: false)
-        {
-            Title = "退出程序验证"
-        };
-
-        if (IsVisible)
-        {
-            dialog.Owner = this;
-        }
-
-        if (dialog.ShowDialog() != true)
-        {
-            return;
-        }
-
-        if (!PasswordService.Verify(_settings, dialog.EnteredPassword))
-        {
-            if (IsVisible)
-            {
-                WpfMessageBox.Show(this, "管理员密码不正确，无法退出程序。", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-            else
-            {
-                WpfMessageBox.Show("管理员密码不正确，无法退出程序。", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
-            }
-
-            return;
-        }
-
         _allowExit = true;
         _notifyIcon.Visible = false;
         Close();
     }
 
-    private void UnlockButton_Click(object sender, RoutedEventArgs e)
-    {
-        var dialog = new PasswordDialog(isCreateMode: false)
-        {
-            Owner = this,
-            Title = "管理员解锁"
-        };
-
-        if (dialog.ShowDialog() != true)
-        {
-            return;
-        }
-
-        if (!PasswordService.Verify(_settings, dialog.EnteredPassword))
-        {
-            WpfMessageBox.Show(this, "管理员密码不正确。", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
-            return;
-        }
-
-        _isUnlocked = true;
-        ApplyEditMode();
-    }
-
-    private void LockButton_Click(object sender, RoutedEventArgs e)
-    {
-        _isUnlocked = false;
-        ApplyEditMode();
-    }
-
-    private void ChangePasswordButton_Click(object sender, RoutedEventArgs e)
-    {
-        if (!_isUnlocked)
-        {
-            WpfMessageBox.Show(this, "请先完成管理员解锁，再修改密码。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-
-        var dialog = new PasswordDialog(isCreateMode: true)
-        {
-            Owner = this,
-            Title = "修改管理员密码"
-        };
-
-        if (dialog.ShowDialog() != true)
-        {
-            return;
-        }
-
-        PasswordService.SetPassword(_settings, dialog.EnteredPassword);
-        if (!SettingsService.TrySave(_settings, out var saveError))
-        {
-            WpfMessageBox.Show(this, saveError, "保存失败", MessageBoxButton.OK, MessageBoxImage.Error);
-            return;
-        }
-
-        WpfMessageBox.Show(this, "管理员密码已成功修改。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-    }
-
     private void SaveButton_Click(object sender, RoutedEventArgs e)
     {
-        if (!_isUnlocked)
-        {
-            WpfMessageBox.Show(this, "请先完成管理员解锁，再修改设置。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
-            return;
-        }
-
         if (!int.TryParse(MicrophoneCheckIntervalTextBox.Text, out int ticks))
         {
             WpfMessageBox.Show(this, "检查间隔必须是有效的数字（Ticks）。", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
