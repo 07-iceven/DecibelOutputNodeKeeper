@@ -2,17 +2,17 @@ using System.Diagnostics;
 using System.ComponentModel;
 using System.Windows;
 using Drawing = System.Drawing;
-using PanelTuner.Models;
-using PanelTuner.Services;
-using PanelTuner.Windows;
+using DecibelOutputNodeKeeper.Models;
+using DecibelOutputNodeKeeper.Services;
+using DecibelOutputNodeKeeper.Windows;
 using Forms = System.Windows.Forms;
 using WpfMessageBox = System.Windows.MessageBox;
 
-namespace PanelTuner;
+namespace DecibelOutputNodeKeeper;
 
 public partial class MainWindow : Window
 {
-    private const string GitHubUrl = "https://github.com/07-iceven/PanelTuner";
+    private const string GitHubUrl = "https://github.com/07-iceven/DecibelOutputNodeKeeper";
     private readonly AppSettings _settings;
     private readonly AudioLockService _audioLockService;
     private readonly StartupService _startupService;
@@ -83,7 +83,7 @@ public partial class MainWindow : Window
         var notifyIcon = new Forms.NotifyIcon
         {
             Icon = Drawing.SystemIcons.Application,
-            Text = "Panel Tuner",
+            Text = "Decibel Output Node Keeper",
             Visible = true,
             ContextMenuStrip = contextMenu
         };
@@ -103,7 +103,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        _notifyIcon.BalloonTipTitle = "Panel Tuner 正在后台运行";
+        _notifyIcon.BalloonTipTitle = "Decibel Output Node Keeper 正在后台运行";
         _notifyIcon.BalloonTipText = "已最小化到系统托盘。双击托盘图标可重新打开主窗口。";
         _notifyIcon.ShowBalloonTip(3000);
         _trayTipShown = true;

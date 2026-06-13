@@ -1,9 +1,9 @@
 #ifndef MyAppName
-#define MyAppName "Panel Tuner"
+#define MyAppName "Decibel Output Node Keeper"
 #endif
 
 #ifndef MyAppExeName
-#define MyAppExeName "PanelTuner.exe"
+#define MyAppExeName "DecibelOutputNodeKeeper.exe"
 #endif
 
 #ifndef MyAppVersion
@@ -32,7 +32,7 @@ SolidCompression=yes
 WizardStyle=modern
 DisableProgramGroupPage=yes
 OutputDir=..\dist\installer
-OutputBaseFilename=PanelTuner-Setup-v{#MyAppVersion}
+OutputBaseFilename=DecibelOutputNodeKeeper-Setup-v{#MyAppVersion}
 SetupLogging=yes
 
 [Languages]

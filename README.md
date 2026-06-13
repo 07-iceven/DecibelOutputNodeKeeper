@@ -1,6 +1,6 @@
-# Panel Tuner
+# Decibel Output Node Keeper
 
-`Panel Tuner` 是一个基于 `WPF` 与 `.NET 8` 的 Windows 桌面工具，用于持续锁定默认麦克风音量，并通过管理员密码保护设置修改与程序退出操作。
+`Decibel Output Node Keeper` 是一个基于 `WPF` 与 `.NET 8` 的 Windows 桌面工具，用于持续锁定默认麦克风音量，并通过管理员密码保护设置修改与程序退出操作。
 
 ## 功能简介
 
@@ -37,13 +37,13 @@
 
 ```bash
 dotnet restore
-dotnet run --project PanelTuner.csproj
+dotnet run --project DecibelOutputNodeKeeper.csproj
 ```
 
 发布示例：
 
 ```bash
-dotnet publish PanelTuner.csproj -c Release
+dotnet publish DecibelOutputNodeKeeper.csproj -c Release
 ```
 
 ### 使用 Inno Setup 打包
@@ -51,7 +51,7 @@ dotnet publish PanelTuner.csproj -c Release
 建议先发布为 `win-x64` 自包含版本，再使用 `Inno Setup Compiler` 生成安装包：
 
 ```powershell
-dotnet publish .\PanelTuner.csproj `
+dotnet publish .\DecibelOutputNodeKeeper.csproj `
   -c Release `
   -r win-x64 `
   --self-contained true `
@@ -61,19 +61,19 @@ dotnet publish .\PanelTuner.csproj `
 发布完成后，使用 `Inno Setup Compiler` 打开并编译：
 
 ```text
-installer\PanelTuner.iss
+installer\DecibelOutputNodeKeeper.iss
 ```
 
 脚本默认约定：
 
 - 发布目录为 `publish\win-x64`
 - 安装包输出目录为 `dist\installer`
-- 安装位置为 `%LOCALAPPDATA%\Programs\Panel Tuner`
+- 安装位置为 `%LOCALAPPDATA%\Programs\Decibel Output Node Keeper`
 
 如果你想在命令行编译安装包，可执行：
 
 ```powershell
-iscc .\installer\PanelTuner.iss
+iscc .\installer\DecibelOutputNodeKeeper.iss
 ```
 
 ## 使用说明
@@ -109,7 +109,7 @@ iscc .\installer\PanelTuner.iss
 程序配置保存在：
 
 ```text
-%LOCALAPPDATA%\Panel Tuner\settings.json
+%LOCALAPPDATA%\Decibel Output Node Keeper\settings.json
 ```
 
 配置内容包括：
@@ -143,7 +143,7 @@ HKCU\Software\Microsoft\Windows\CurrentVersion\Run
 ## 项目结构
 
 ```text
-PanelTuner/
+DecibelOutputNodeKeeper/
 |- Models/
 |  \- AppSettings.cs
 |- Services/
@@ -158,6 +158,6 @@ PanelTuner/
 |- App.xaml.cs
 |- MainWindow.xaml
 |- MainWindow.xaml.cs
-|- PanelTuner.csproj
+|- DecibelOutputNodeKeeper.csproj
 \- README.md
 ```

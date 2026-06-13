@@ -1,9 +1,9 @@
 using System.Windows;
-using PanelTuner.Services;
-using PanelTuner.Windows;
+using DecibelOutputNodeKeeper.Services;
+using DecibelOutputNodeKeeper.Windows;
 using WpfMessageBox = System.Windows.MessageBox;
 
-namespace PanelTuner;
+namespace DecibelOutputNodeKeeper;
 
 public partial class App : System.Windows.Application
 {

@@ -1,4 +1,4 @@
-namespace PanelTuner.Models;
+namespace DecibelOutputNodeKeeper.Models;
 
 public class AppSettings
 {

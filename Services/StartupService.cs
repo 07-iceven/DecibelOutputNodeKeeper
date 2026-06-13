@@ -1,7 +1,7 @@
 using Microsoft.Win32;
-using PanelTuner.Models;
+using DecibelOutputNodeKeeper.Models;
 
-namespace PanelTuner.Services;
+namespace DecibelOutputNodeKeeper.Services;
 
 public sealed class StartupApplyResult
 {
@@ -17,7 +17,7 @@ public sealed class StartupApplyResult
 
 public class StartupService
 {
-    private const string AppName = "Panel Tuner";
+    private const string AppName = "Decibel Output Node Keeper";
     private const string RunRegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Run";
 
     public StartupApplyResult Apply(AppSettings settings)

@@ -1,8 +1,8 @@
 using System.IO;
 using System.Text.Json;
-using PanelTuner.Models;
+using DecibelOutputNodeKeeper.Models;
 
-namespace PanelTuner.Services;
+namespace DecibelOutputNodeKeeper.Services;
 
 public enum SettingsLoadStatus
 {
@@ -23,7 +23,7 @@ public static class SettingsService
 {
     private static readonly string AppDataPath = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "Panel Tuner");
+        "Decibel Output Node Keeper");
 
     private static readonly string SettingsPath = Path.Combine(AppDataPath, "settings.json");
 

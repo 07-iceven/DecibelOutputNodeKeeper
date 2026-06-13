@@ -1,8 +1,8 @@
 using System.Security.Cryptography;
 using System.Text;
-using PanelTuner.Models;
+using DecibelOutputNodeKeeper.Models;
 
-namespace PanelTuner.Services;
+namespace DecibelOutputNodeKeeper.Services;
 
 public static class PasswordService
 {

@@ -1,9 +1,9 @@
 using System.Timers;
 using System.Diagnostics;
 using NAudio.CoreAudioApi;
-using PanelTuner.Models;
+using DecibelOutputNodeKeeper.Models;
 
-namespace PanelTuner.Services;
+namespace DecibelOutputNodeKeeper.Services;
 
 public class AudioLockService : IDisposable
 {

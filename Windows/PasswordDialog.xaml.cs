@@ -1,7 +1,7 @@
 using System.Windows;
 using WpfMessageBox = System.Windows.MessageBox;
 
-namespace PanelTuner.Windows;
+namespace DecibelOutputNodeKeeper.Windows;
 
 public partial class PasswordDialog : Window
 {
