@@ -6,6 +6,7 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
         Title="Decibel Output Node Keeper"
+        Icon="/logo.ico"
         Height="760"
         Width="960"
         MinHeight="700"

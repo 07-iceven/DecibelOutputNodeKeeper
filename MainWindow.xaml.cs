@@ -82,7 +82,7 @@ public partial class MainWindow : Window
 
         var notifyIcon = new Forms.NotifyIcon
         {
-            Icon = Drawing.SystemIcons.Application,
+            Icon = new System.Drawing.Icon(System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/logo.ico")).Stream),
             Text = "Decibel Output Node Keeper",
             Visible = true,
             ContextMenuStrip = contextMenu
