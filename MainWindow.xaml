@@ -25,15 +25,18 @@
                 <ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel>
-                <TextBlock FontSize="28" FontWeight="SemiBold" Text="Decibel Output Node Keeper" />
-                <TextBlock Margin="0,6,0,0"
-                           Foreground="{DynamicResource TextFillColorSecondaryBrush}">
-                    <Hyperlink Click="GitHubLink_Click"
-                               ToolTip="打开 GitHub 项目">
-                        GitHub: 07-iceven/DecibelOutputNodeKeeper
-                    </Hyperlink>
-                </TextBlock>
+            <StackPanel Orientation="Horizontal">
+                <Image Source="/logo.ico" Width="48" Height="48" Margin="0,0,16,0" VerticalAlignment="Center" />
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock FontSize="28" FontWeight="SemiBold" Text="Decibel Output Node Keeper" />
+                    <TextBlock Margin="0,6,0,0"
+                               Foreground="{DynamicResource TextFillColorSecondaryBrush}">
+                        <Hyperlink Click="GitHubLink_Click"
+                                   ToolTip="打开 GitHub 项目">
+                            GitHub: 07-iceven/DecibelOutputNodeKeeper
+                        </Hyperlink>
+                    </TextBlock>
+                </StackPanel>
             </StackPanel>
 
             <StackPanel Grid.Column="1"
